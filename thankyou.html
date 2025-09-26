@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Thank You — Mini Shop</title>
+  <style>
+    body{font-family:system-ui,Segoe UI,Roboto,Arial;margin:0;background:#f7f7fb;color:#111;display:flex;align-items:center;justify-content:center;height:100vh}
+    .box{background:#fff;padding:28px;border-radius:12px;box-shadow:0 20px 60px rgba(10,10,20,0.06);max-width:720px}
+    h1{margin:0 0 8px;color:#0366d6}
+    .order{margin-top:12px;background:#fafafb;padding:12px;border-radius:8px}
+    .btn{display:inline-block;margin-top:14px;padding:10px 14px;border-radius:10px;background:#0366d6;color:#fff;text-decoration:none}
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h1>🎉 Thank you for your purchase!</h1>
+    <p>Your order has been received.</p>
+
+    <div id="orderSummary" class="order">Loading order...</div>
+
+    <a class="btn" href="index.html">Back to shop</a>
+  </div>
+
+  <script>
+    const last = JSON.parse(localStorage.getItem('mini_last_order') || 'null');
+    const summary = document.getElementById('orderSummary');
+    if(!last){
+      summary.innerHTML = '<div>No recent order found. <a href="index.html">Shop now</a></div>';
+    } else {
+      let html = `<div><strong>Order ID:</strong> ${last.id}</div>
+                  <div style="margin-top:8px"><strong>Name:</strong> ${last.customer}</div>
+                  <div style="margin-top:8px"><strong>Items:</strong></div><ul>`;
+      last.items.forEach(it => html += `<li>${it.name} — ₹${it.price}</li>`);
+      html += `</ul><div style="font-weight:700;margin-top:6px">Total: ₹${last.items.reduce((s,i)=>s+i.price,0)}</div>`;
+      summary.innerHTML = html;
+      // Optionally clear last order after showing:
+      // localStorage.removeItem('mini_last_order');
+    }
+  </script>
+</body>
+</html>
