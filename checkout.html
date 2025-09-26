@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Checkout — Mini Shop</title>
+  <style>
+    body{font-family:system-ui,Segoe UI,Roboto,Arial;margin:0;background:#f7f7fb;color:#111}
+    .wrap{max-width:760px;margin:32px auto;padding:18px}
+    .card{background:#fff;padding:18px;border-radius:12px;box-shadow:0 8px 22px rgba(10,10,20,0.06)}
+    .items{margin-bottom:12px}
+    .item{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f0f0f3}
+    label{display:block;margin-top:8px;color:#555}
+    input,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid #e6e6ee;margin-top:6px}
+    button{margin-top:14px;padding:12px;border-radius:10px;background:#0366d6;color:#fff;border:0;cursor:pointer}
+    .empty{color:#999}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h2>Checkout</h2>
+    <div class="card">
+      <div class="items" id="cartList"></div>
+
+      <form id="checkoutForm">
+        <label>Full Name<input id="name" required /></label>
+        <label>Email<input id="email" type="email" required /></label>
+        <label>Address<textarea id="address" rows="3"></textarea></label>
+        <button type="submit" id="purchaseBtn">Purchase</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    function getCart(){ return JSON.parse(localStorage.getItem('mini_cart')||'[]'); }
+    function clearCart(){ localStorage.removeItem('mini_cart'); }
+
+    // render cart items
+    const cartList = document.getElementById('cartList');
+    const cart = getCart();
+    if(cart.length === 0){
+      cartList.innerHTML = '<div class="empty">Your cart is empty. <a href="index.html">Back to shop</a></div>';
+      document.getElementById('purchaseBtn').disabled = true;
+    } else {
+      let total = 0;
+      cart.forEach((it, i)=>{
+        total += it.price;
+        const div = document.createElement('div');
+        div.className = 'item';
+        div.innerHTML = `<div>${it.name} <small style="color:#666">(${it.desc.split('(')[0].trim()})</small></div><div>₹${it.price}</div>`;
+        cartList.appendChild(div);
+      });
+      const tot = document.createElement('div'); tot.style.fontWeight='700'; tot.style.paddingTop='8px'; tot.textContent = 'Total: ₹' + total;
+      cartList.appendChild(tot);
+    }
+
+    // submit form -> save order & goto thankyou
+    document.getElementById('checkoutForm').addEventListener('submit', function(e){
+      e.preventDefault();
+      if(getCart().length === 0) { alert('Cart is empty'); return; }
+      const order = {
+        id: 'ORD' + Date.now(),
+        customer: document.getElementById('name').value.trim(),
+        email: document.getElementById('email').value.trim(),
+        address: document.getElementById('address').value.trim(),
+        items: getCart(),
+        created: new Date().toISOString()
+      };
+      // save order to localStorage for thankyou page
+      localStorage.setItem('mini_last_order', JSON.stringify(order));
+      // clear cart
+      clearCart();
+      // go to thank you
+      window.location.href = 'thankyou.html';
+    });
+  </script>
+</body>
+</html>
