@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Mini Shop — Products</title>
+  <style>
+    body{font-family:system-ui,Segoe UI,Roboto,Arial;margin:0;background:#f7f7fb;color:#111}
+    .wrap{max-width:980px;margin:28px auto;padding:20px}
+    header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+    .card{background:#fff;border-radius:10px;padding:12px;box-shadow:0 6px 18px rgba(10,10,20,0.06);display:flex;flex-direction:column;gap:8px}
+    .thumb{height:140px;border-radius:8px;overflow:hidden;background:#eee;display:flex;align-items:center;justify-content:center}
+    .thumb img{max-width:100%;height:100%;object-fit:cover}
+    .pname{font-weight:700}
+    .pdesc{color:#666;font-size:13px}
+    .price-row{display:flex;justify-content:space-between;align-items:center;margin-top:auto}
+    button{cursor:pointer;border:0;padding:8px 12px;border-radius:8px}
+    .add{background:#0366d6;color:#fff}
+    .checkout{background:#22c55e;color:#fff}
+    .cart{font-size:14px;color:#333}
+    footer{margin-top:22px;color:#666;font-size:13px;text-align:center}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div>
+        <h1 style="margin:0">Mini Shop — Beauty Picks</h1>
+        <div style="font-size:13px;color:#666">Small demo: add to cart → checkout → thank you</div>
+      </div>
+      <div>
+        <span class="cart">Cart: <strong id="cartCount">0</strong></span>
+        <a href="checkout.html"><button class="checkout" style="margin-left:12px">Checkout</button></a>
+      </div>
+    </header>
+
+    <section class="grid" id="products"></section>
+
+    <footer>© Demo Shop</footer>
+  </div>
+
+  <script>
+    // Product data
+    const products = [
+      { id:'p1', name:'Signature Facial', price:1599, desc:'Deep-cleansing glow facial (60 min)', img:'https://via.placeholder.com/600x400?text=Facial' },
+      { id:'p2', name:'Keratin Treatment', price:4999, desc:'Smooth, frizz-free hair (90 min)', img:'https://via.placeholder.com/600x400?text=Keratin' },
+      { id:'p3', name:'Manicure & Pedicure', price:1299, desc:'Luxury mani-pedi combo (75 min)', img:'https://via.placeholder.com/600x400?text=Mani+Pedi' },
+      { id:'p4', name:'Hair Spa', price:1999, desc:'Rejuvenating scalp treatment (45 min)', img:'https://via.placeholder.com/600x400?text=Hair+Spa' }
+    ];
+
+    // render products
+    const container = document.getElementById('products');
+    products.forEach(p=>{
+      const el = document.createElement('article');
+      el.className = 'card';
+      el.innerHTML = `
+        <div class="thumb"><img src="${p.img}" alt="${p.name}"></div>
+        <div class="pname">${p.name}</div>
+        <div class="pdesc">${p.desc}</div>
+        <div class="price-row">
+          <div style="font-weight:700">₹${p.price}</div>
+          <div>
+            <button class="add" data-id="${p.id}">Add to Cart</button>
+          </div>
+        </div>
+      `;
+      container.appendChild(el);
+    });
+
+    // cart helpers (localStorage)
+    function getCart(){ return JSON.parse(localStorage.getItem('mini_cart')||'[]'); }
+    function setCart(c){ localStorage.setItem('mini_cart', JSON.stringify(c)); updateCount(); }
+    function updateCount(){ document.getElementById('cartCount').textContent = getCart().length; }
+
+    // add to cart events
+    document.querySelectorAll('.add').forEach(btn=>{
+      btn.addEventListener('click', e=>{
+        const id = e.currentTarget.dataset.id;
+        const prod = products.find(x=>x.id===id);
+        const cart = getCart();
+        cart.push(prod);
+        setCart(cart);
+        // small feedback
+        e.currentTarget.textContent = 'Added';
+        setTimeout(()=> e.currentTarget.textContent = 'Add to Cart', 900);
+      });
+    });
+
+    // init count on load
+    updateCount();
+  </script>
+</body>
+</html>
